@@ -82,8 +82,36 @@ button:hover { background: #357abd; }
 .status-bar {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     margin-bottom: 1.5rem;
     font-weight: bold;
+}
+
+.badge {
+    padding: 4px 12px;
+    border-radius: 20px;
+    color: white;
+    font-size: 1.2rem;
+    display: inline-block;
+    min-width: 30px;
+    text-align: center;
+}
+
+.badge-x, .cell.x { background-color: var(--primary); color: white; }
+.badge-o, .cell.o { background-color: var(--secondary); color: white; }
+
+.badge.current {
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    transform: scale(1.1);
+}
+
+footer {
+    margin-top: 3rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.9rem;
+    color: #95a5a6;
+    font-style: italic;
 }
 
 .board {

@@ -30,7 +30,8 @@ socket.onmessage = (event) => {
             myRole = data.role;
             currentTurn = data.turn;
             mySymbolEl.textContent = myRole;
-            currentTurnEl.textContent = currentTurn;
+            mySymbolEl.className = `badge badge-${myRole.toLowerCase()}`;
+            updateTurnDisplay();
             showState('game');
             gameActive = true;
             break;
@@ -38,7 +39,7 @@ socket.onmessage = (event) => {
         case 'game_update':
             updateBoard(data.board);
             currentTurn = data.currentTurn;
-            currentTurnEl.textContent = currentTurn;
+            updateTurnDisplay();
             
             if (data.winner) {
                 gameActive = false;
@@ -76,10 +77,19 @@ function showState(state) {
     document.getElementById(state).classList.remove('hidden');
 }
 
+function updateTurnDisplay() {
+    currentTurnEl.textContent = currentTurn;
+    currentTurnEl.className = `badge badge-${currentTurn.toLowerCase()}${currentTurn === myRole ? ' current' : ''}`;
+}
+
 function updateBoard(board) {
     cells.forEach((cell, i) => {
         cell.textContent = board[i] || '';
-        cell.className = 'cell' + (board[i] ? ` ${board[i].toLowerCase()}` : '');
+        // Correction ici : on vide les classes avant de remettre 'cell' et la classe du symbole
+        cell.className = 'cell'; 
+        if (board[i]) {
+            cell.classList.add(board[i].toLowerCase());
+        }
     });
 }
 
