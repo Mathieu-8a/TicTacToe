@@ -30,7 +30,7 @@ socket.onmessage = (event) => {
             myRole = data.role;
             currentTurn = data.turn;
             mySymbolEl.textContent = myRole;
-            mySymbolEl.className = `badge badge-${myRole.toLowerCase()}`;
+            mySymbolEl.className = `badge ${myRole.toLowerCase()}`;
             updateTurnDisplay();
             showState('game');
             gameActive = true;
@@ -79,7 +79,7 @@ function showState(state) {
 
 function updateTurnDisplay() {
     currentTurnEl.textContent = currentTurn;
-    currentTurnEl.className = `badge badge-${currentTurn.toLowerCase()}${currentTurn === myRole ? ' current' : ''}`;
+    currentTurnEl.className = `badge ${currentTurn.toLowerCase()}${currentTurn === myRole ? ' current' : ''}`;
 }
 
 function updateBoard(board) {

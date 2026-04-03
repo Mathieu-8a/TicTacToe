@@ -97,8 +97,13 @@ button:hover { background: #357abd; }
     text-align: center;
 }
 
-.badge-x, .cell.x { background-color: var(--primary); color: white; }
-.badge-o, .cell.o { background-color: var(--secondary); color: white; }
+/* Badges use background colors */
+.badge.x { background-color: var(--primary); }
+.badge.o { background-color: var(--secondary); }
+
+/* Cells use text colors */
+.cell.x { color: var(--primary); }
+.cell.o { color: var(--secondary); }
 
 .badge.current {
     box-shadow: 0 0 10px rgba(0,0,0,0.2);
@@ -136,9 +141,7 @@ footer {
     user-select: none;
 }
 
-.cell.x { color: var(--primary); }
-.cell.o { color: var(--secondary); }
-.cell.winning { background: #2ecc71; color: white; }
+.cell.winning { background: #2ecc71 !important; color: white !important; }
 
 .cell:empty:hover { background: #f1f2f6; }
 
