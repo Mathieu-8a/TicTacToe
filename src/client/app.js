@@ -37,6 +37,12 @@ const currentTurnEl = document.getElementById('current-turn');
 const cells = document.querySelectorAll('.cell');
 const gameMessage = document.getElementById('game-message');
 const rematchBtn = document.getElementById('rematch-btn');
+const decoWham = document.getElementById('deco-wham');
+const decoGaby = document.getElementById('deco-gaby');
+
+// Initialiser les images du lobby
+if (decoWham) decoWham.src = getRandomImage('X');
+if (decoGaby) decoGaby.src = getRandomImage('O');
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
