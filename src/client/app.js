@@ -72,8 +72,9 @@ socket.onmessage = (event) => {
                 if (data.winner === 'draw') {
                     gameMessage.textContent = "Match nul !";
                 } else {
-                    gameMessage.textContent = data.winner === myRole ? "Vous avez gagné !" : "Vous avez perdu !";
-                    highlightWinningCells(data.winningCells);
+                    const isIWin = data.winner === myRole;
+                    gameMessage.textContent = isIWin ? "Vous avez gagné !" : "Vous avez perdu !";
+                    highlightWinningCells(data.winningCells, isIWin);
                 }
                 rematchBtn.classList.remove('hidden');
             }
@@ -132,9 +133,10 @@ function updateBoard(board) {
     });
 }
 
-function highlightWinningCells(winningCells) {
+function highlightWinningCells(winningCells, isIWin) {
+    const className = isIWin ? 'winning' : 'losing';
     winningCells.forEach(index => {
-        cells[index].classList.add('winning');
+        cells[index].classList.add(className);
     });
 }
 
