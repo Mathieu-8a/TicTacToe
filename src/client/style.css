@@ -88,22 +88,35 @@ button:hover { background: #357abd; }
 }
 
 .badge {
-    padding: 4px 12px;
-    border-radius: 20px;
+    padding: 2px;
+    border-radius: 50%;
     color: white;
     font-size: 1.2rem;
-    display: inline-block;
-    min-width: 30px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    min-width: 40px;
+    height: 40px;
     text-align: center;
+    vertical-align: middle;
+}
+
+.badge-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;
 }
 
 /* Badges use background colors */
 .badge.x { background-color: var(--primary); }
 .badge.o { background-color: var(--secondary); }
 
-/* Cells use text colors */
-.cell.x { color: var(--primary); }
-.cell.o { color: var(--secondary); }
+.cell-img {
+    width: 80%;
+    height: 80%;
+    object-fit: contain;
+}
 
 .badge.current {
     box-shadow: 0 0 10px rgba(0,0,0,0.2);

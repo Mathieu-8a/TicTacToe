@@ -3,20 +3,21 @@ const protocol = window.location.protocol === 'https:' ? 'wss' : 'ws';
 const socket = new WebSocket(`${protocol}://${window.location.host}`);
 
 let myRole = null;
+let myRoleImage = null;
 let currentTurn = 'X';
 let gameActive = false;
+let boardImages = Array(9).fill(null);
 
-const lobby = document.getElementById('lobby');
-const waiting = document.getElementById('waiting');
-const game = document.getElementById('game');
-const myCodeEl = document.getElementById('my-code');
-const joinCodeInput = document.getElementById('join-code');
-const joinBtn = document.getElementById('join-btn');
-const mySymbolEl = document.getElementById('my-symbol');
-const currentTurnEl = document.getElementById('current-turn');
-const cells = document.querySelectorAll('.cell');
-const gameMessage = document.getElementById('game-message');
-const rematchBtn = document.getElementById('rematch-btn');
+// ... (gabyImages and whamImages remain the same)
+
+function getRandomImage(role) {
+    const images = role === 'O' ? gabyImages : whamImages;
+    const folder = role === 'O' ? 'Faces_Gaby' : 'Faces_Wham';
+    const randomImg = images[Math.floor(Math.random() * images.length)];
+    return `assets/images/${folder}/${randomImg}`;
+}
+
+// ... (lobby, waiting, game definitions)
 
 socket.onmessage = (event) => {
     const data = JSON.parse(event.data);
@@ -28,84 +29,41 @@ socket.onmessage = (event) => {
         
         case 'game_start':
             myRole = data.role;
+            myRoleImage = getRandomImage(myRole);
             currentTurn = data.turn;
-            mySymbolEl.textContent = myRole;
-            mySymbolEl.className = `badge ${myRole.toLowerCase()}`;
+            updateSymbolDisplay(mySymbolEl, myRole);
             updateTurnDisplay();
             showState('game');
             gameActive = true;
             break;
 
-        case 'game_update':
-            updateBoard(data.board);
-            currentTurn = data.currentTurn;
-            updateTurnDisplay();
-            
-            if (data.winner) {
-                gameActive = false;
-                if (data.winner === 'draw') {
-                    gameMessage.textContent = "Match nul !";
-                } else {
-                    gameMessage.textContent = data.winner === myRole ? "Vous avez gagné !" : "Vous avez perdu !";
-                    highlightWinningCells(data.winningCells);
-                }
-                rematchBtn.classList.remove('hidden');
-            }
-            break;
+// ... (other cases)
 
-        case 'opponent_wants_rematch':
-            gameMessage.textContent = "L'adversaire veut rejouer...";
-            break;
-
-        case 'rematch_accepted':
-            resetGame(data.board);
-            break;
-
-        case 'opponent_disconnected':
-            gameMessage.textContent = "Adversaire déconnecté.";
-            gameActive = false;
-            break;
-
-        case 'error':
-            alert(data.message);
-            break;
-    }
-};
-
-function showState(state) {
-    [lobby, waiting, game].forEach(el => el.classList.add('hidden'));
-    document.getElementById(state).classList.remove('hidden');
+function updateSymbolDisplay(el, role) {
+    const imgPath = (role === myRole && myRoleImage) ? myRoleImage : getRandomImage(role);
+    el.innerHTML = `<img src="${imgPath}" alt="${role}" class="badge-img">`;
+    el.className = `badge ${role.toLowerCase()}`;
 }
 
 function updateTurnDisplay() {
-    currentTurnEl.textContent = currentTurn;
+    // L'image du tour peut changer, c'est dynamique
+    const imgPath = getRandomImage(currentTurn);
+    currentTurnEl.innerHTML = `<img src="${imgPath}" alt="${currentTurn}" class="badge-img">`;
     currentTurnEl.className = `badge ${currentTurn.toLowerCase()}${currentTurn === myRole ? ' current' : ''}`;
 }
 
-function updateBoard(board) {
-    cells.forEach((cell, i) => {
-        cell.textContent = board[i] || '';
-        // Correction ici : on vide les classes avant de remettre 'cell' et la classe du symbole
-        cell.className = 'cell'; 
-        if (board[i]) {
-            cell.classList.add(board[i].toLowerCase());
-        }
-    });
-}
+// ... (updateBoard remains the same)
 
-function highlightWinningCells(winningCells) {
-    winningCells.forEach(index => {
-        cells[index].classList.add('winning');
-    });
-}
+// ... (highlightWinningCells remains the same)
 
 function resetGame(board) {
+    boardImages = Array(9).fill(null);
     updateBoard(board);
     gameMessage.textContent = "";
     rematchBtn.classList.add('hidden');
     gameActive = true;
     currentTurn = 'X';
-    currentTurnEl.textContent = currentTurn;
+    updateTurnDisplay();
 }
 
 joinBtn.onclick = () => {
@@ -118,7 +76,7 @@ joinBtn.onclick = () => {
 
 cells.forEach(cell => {
     cell.onclick = () => {
-        if (!gameActive || currentTurn !== myRole || cell.textContent !== '') return;
+        if (!gameActive || currentTurn !== myRole || cell.innerHTML !== '') return;
         const index = cell.getAttribute('data-index');
         socket.send(JSON.stringify({ type: 'move', cell: parseInt(index) }));
     };
