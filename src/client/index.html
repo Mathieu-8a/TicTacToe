@@ -23,22 +23,28 @@
                 </div>
             </div>
 
-            <div class="card">
-                <h3>Votre Code</h3>
-                <div id="my-code" class="code-display">------</div>
-                <p>Partagez ce code avec un ami</p>
+            <div class="card duo-card">
+                <h2>Mode Duo</h2>
+                <div class="duo-section">
+                    <h3>Votre Code</h3>
+                    <div id="my-code" class="code-display">------</div>
+                    <p class="hint">Partagez ce code avec un ami</p>
+                </div>
+                
+                <div class="divider-horizontal"></div>
+                
+                <div class="duo-section">
+                    <h3>Rejoindre un ami</h3>
+                    <input type="text" id="join-code" placeholder="Code d'un ami (ex: K7P2XR)" maxlength="6">
+                    <p class="input-hint">Les lettres peuvent être en minuscules ou majuscules</p>
+                    <button id="join-btn">Rejoindre</button>
+                </div>
             </div>
-            <div class="divider">OU</div>
+
             <div class="card solo-card">
-                <h3>Jouer seul</h3>
-                <button id="solo-btn" class="secondary-btn">Mode Solo (vs IA)</button>
-            </div>
-            <div class="divider">OU</div>
-            <div class="card">
-                <h3>Rejoindre avec le code d'un ami</h3>
-                <input type="text" id="join-code" placeholder="Code (ex: K7P2XR)" maxlength="6">
-                <p class="input-hint">Les lettres peuvent être en minuscules ou majuscules</p>
-                <button id="join-btn">Rejoindre</button>
+                <h2>Mode Solo</h2>
+                <p>Affrontez l'intelligence artificielle</p>
+                <button id="solo-btn" class="secondary-btn">Jouer contre l'IA</button>
             </div>
         </div>
 

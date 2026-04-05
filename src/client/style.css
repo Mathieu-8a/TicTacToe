@@ -82,20 +82,57 @@ h1 { margin-bottom: 2rem; }
     background: #f1f2f6;
     padding: 1.5rem;
     border-radius: 8px;
+    margin-bottom: 1.5rem;
+}
+
+.duo-card h2, .solo-card h2 {
+    margin-top: 0;
+    color: var(--primary);
+    border-bottom: 2px solid #dcdde1;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.solo-card h2 {
+    color: var(--secondary);
+}
+
+.duo-section {
+    padding: 0.5rem 0;
+}
+
+.divider-horizontal {
+    height: 1px;
+    background: #dcdde1;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.divider-horizontal::after {
+    content: "OU";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #f1f2f6;
+    padding: 0 10px;
+    font-size: 0.8rem;
+    font-weight: bold;
+    color: #7f8c8d;
 }
 
 .code-display {
     font-size: 2rem;
     font-weight: bold;
     color: var(--primary);
-    margin: 1rem 0;
+    margin: 0.5rem 0;
     letter-spacing: 2px;
 }
 
-.divider {
-    margin: 1rem 0;
-    font-weight: bold;
+.hint {
+    font-size: 0.9rem;
     color: #7f8c8d;
+    margin-bottom: 0.5rem;
 }
 
 input {
@@ -141,6 +178,11 @@ button:hover { background: #357abd; }
 
 .solo-card {
     background: #ecf0f1;
+}
+
+.solo-card p {
+    margin-bottom: 1rem;
+    color: #7f8c8d;
 }
 
 /* Game */
