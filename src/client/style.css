@@ -226,9 +226,15 @@ footer {
 
 .message {
     font-weight: bold;
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     min-height: 2rem;
     font-size: 1.4rem;
+}
+
+.game-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 /* Loader */

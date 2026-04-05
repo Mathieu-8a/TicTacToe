@@ -38,6 +38,7 @@ const currentTurnEl = document.getElementById('current-turn');
 const cells = document.querySelectorAll('.cell');
 const gameMessage = document.getElementById('game-message');
 const rematchBtn = document.getElementById('rematch-btn');
+const homeBtn = document.getElementById('home-btn');
 const decoWham = document.getElementById('deco-wham');
 const decoGaby = document.getElementById('deco-gaby');
 
@@ -78,6 +79,7 @@ socket.onmessage = (event) => {
                     highlightWinningCells(data.winningCells, isIWin);
                 }
                 rematchBtn.classList.remove('hidden');
+                homeBtn.classList.remove('hidden');
             }
             break;
 
@@ -146,6 +148,7 @@ function resetGame(board) {
     updateBoard(board);
     gameMessage.textContent = "";
     rematchBtn.classList.add('hidden');
+    homeBtn.classList.add('hidden');
     gameActive = true;
     currentTurn = 'X';
     updateTurnDisplay();
@@ -161,6 +164,11 @@ joinBtn.onclick = () => {
 
 soloBtn.onclick = () => {
     socket.send(JSON.stringify({ type: 'start_solo' }));
+};
+
+homeBtn.onclick = () => {
+    socket.send(JSON.stringify({ type: 'leave_game' }));
+    showState('lobby');
 };
 
 cells.forEach(cell => {

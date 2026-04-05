@@ -123,6 +123,32 @@ wss.on('connection', (ws) => {
       }
     }
 
+    if (data.type === 'leave_game') {
+      const oldGame = games.get(ws.gameCode);
+      if (oldGame) {
+        oldGame.players = oldGame.players.filter(p => p !== ws);
+        if (oldGame.players.length > 0) {
+          oldGame.players[0].send(JSON.stringify({ type: 'opponent_disconnected' }));
+        } else {
+          games.delete(ws.gameCode);
+        }
+      }
+      
+      // Assign new code for the lobby
+      let newCode = generateCode();
+      games.set(newCode, { 
+        players: [ws], 
+        board: Array(9).fill(null), 
+        turn: 0, 
+        winner: null, 
+        started: false,
+        rematchRequests: new Set()
+      });
+      ws.gameCode = newCode;
+      ws.role = 'X';
+      ws.send(JSON.stringify({ type: 'init', code: newCode }));
+    }
+
     if (data.type === 'join') {
       const targetCode = data.code.toUpperCase();
       const targetGame = games.get(targetCode);
