@@ -58,6 +58,7 @@ socket.onmessage = (event) => {
             break;
         
         case 'game_start':
+            resetGame(Array(9).fill(null)); // Ensure board is fresh
             myRole = data.role;
             isLocalMode = !!data.isLocal;
             myRoleImage = getRandomImage(myRole);
