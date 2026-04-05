@@ -123,6 +123,20 @@ wss.on('connection', (ws) => {
       }
     }
 
+    if (data.type === 'start_local') {
+      const game = games.get(ws.gameCode);
+      if (game && !game.started) {
+        game.isLocal = true;
+        game.started = true;
+        ws.send(JSON.stringify({ 
+          type: 'game_start', 
+          role: 'X', // Local player is both, but we show X as primary
+          isLocal: true,
+          turn: 'X' 
+        }));
+      }
+    }
+
     if (data.type === 'leave_game') {
       const oldGame = games.get(ws.gameCode);
       if (oldGame) {
@@ -177,8 +191,13 @@ wss.on('connection', (ws) => {
 
     if (data.type === 'move' && game && game.started && !game.winner) {
       const currentSymbol = game.turn % 2 === 0 ? 'X' : 'O';
-      if (ws.role === currentSymbol && game.board[data.cell] === null) {
-        game.board[data.cell] = ws.role;
+      // In local mode, we allow the single player to move for both X and O
+      const canMove = game.isLocal || ws.role === currentSymbol;
+
+      if (canMove && game.board[data.cell] === null) {
+        // In local mode, we temporarily set the role to the current symbol for the board update
+        const symbolToPlace = game.isLocal ? currentSymbol : ws.role;
+        game.board[data.cell] = symbolToPlace;
         game.turn++;
         
         let result = checkWinner(game.board);
@@ -221,7 +240,7 @@ wss.on('connection', (ws) => {
     }
 
     if (data.type === 'rematch_request' && game && game.winner) {
-      if (game.isSolo) {
+      if (game.isSolo || game.isLocal) {
         game.board = Array(9).fill(null);
         game.turn = 0;
         game.winner = null;

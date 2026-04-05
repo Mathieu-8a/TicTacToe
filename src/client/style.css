@@ -176,11 +176,31 @@ button:hover { background: #357abd; }
     background: #e67e22;
 }
 
+.accent-btn {
+    background: #27ae60;
+}
+
+.accent-btn:hover {
+    background: #219150;
+}
+
 .solo-card {
     background: #ecf0f1;
 }
 
-.solo-card p {
+.local-card {
+    background: #e8f8f5;
+}
+
+.local-card h2 {
+    margin-top: 0;
+    color: #27ae60;
+    border-bottom: 2px solid #dcdde1;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.solo-card p, .local-card p {
     margin-bottom: 1rem;
     color: #7f8c8d;
 }

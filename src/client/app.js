@@ -33,6 +33,7 @@ const myCodeEl = document.getElementById('my-code');
 const joinCodeInput = document.getElementById('join-code');
 const joinBtn = document.getElementById('join-btn');
 const soloBtn = document.getElementById('solo-btn');
+const localBtn = document.getElementById('local-btn');
 const mySymbolEl = document.getElementById('my-symbol');
 const currentTurnEl = document.getElementById('current-turn');
 const cells = document.querySelectorAll('.cell');
@@ -41,6 +42,8 @@ const rematchBtn = document.getElementById('rematch-btn');
 const homeBtn = document.getElementById('home-btn');
 const decoWham = document.getElementById('deco-wham');
 const decoGaby = document.getElementById('deco-gaby');
+
+let isLocalMode = false;
 
 // Initialiser les images du lobby
 if (decoWham) decoWham.src = getRandomImage('X');
@@ -56,9 +59,19 @@ socket.onmessage = (event) => {
         
         case 'game_start':
             myRole = data.role;
+            isLocalMode = !!data.isLocal;
             myRoleImage = getRandomImage(myRole);
             currentTurn = data.turn;
-            updateSymbolDisplay(mySymbolEl, myRole);
+            
+            if (isLocalMode) {
+                document.getElementById('role-indicator').innerHTML = 'Mode : <span id="my-symbol" class="badge">Local</span>';
+                mySymbolEl = document.getElementById('my-symbol'); // Refresh ref
+            } else {
+                document.getElementById('role-indicator').innerHTML = 'Vous jouez : <span id="my-symbol" class="badge">-</span>';
+                mySymbolEl = document.getElementById('my-symbol'); // Refresh ref
+                updateSymbolDisplay(mySymbolEl, myRole);
+            }
+            
             updateTurnDisplay();
             showState('game');
             gameActive = true;
@@ -74,9 +87,14 @@ socket.onmessage = (event) => {
                 if (data.winner === 'draw') {
                     gameMessage.textContent = "Match nul !";
                 } else {
-                    const isIWin = data.winner === myRole;
-                    gameMessage.textContent = isIWin ? "Vous avez gagné !" : "Vous avez perdu !";
-                    highlightWinningCells(data.winningCells, isIWin);
+                    if (isLocalMode) {
+                        gameMessage.textContent = `${data.winner} a gagné !`;
+                        highlightWinningCells(data.winningCells, true);
+                    } else {
+                        const isIWin = data.winner === myRole;
+                        gameMessage.textContent = isIWin ? "Vous avez gagné !" : "Vous avez perdu !";
+                        highlightWinningCells(data.winningCells, isIWin);
+                    }
                 }
                 rematchBtn.classList.remove('hidden');
                 homeBtn.classList.remove('hidden');
@@ -166,14 +184,20 @@ soloBtn.onclick = () => {
     socket.send(JSON.stringify({ type: 'start_solo' }));
 };
 
+localBtn.onclick = () => {
+    socket.send(JSON.stringify({ type: 'start_local' }));
+};
+
 homeBtn.onclick = () => {
     socket.send(JSON.stringify({ type: 'leave_game' }));
+    isLocalMode = false;
     showState('lobby');
 };
 
 cells.forEach(cell => {
     cell.onclick = () => {
-        if (!gameActive || currentTurn !== myRole || cell.innerHTML !== '') return;
+        if (!gameActive || cell.innerHTML !== '') return;
+        if (!isLocalMode && currentTurn !== myRole) return;
         const index = cell.getAttribute('data-index');
         socket.send(JSON.stringify({ type: 'move', cell: parseInt(index) }));
     };
