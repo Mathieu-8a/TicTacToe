@@ -32,6 +32,7 @@ const game = document.getElementById('game');
 const myCodeEl = document.getElementById('my-code');
 const joinCodeInput = document.getElementById('join-code');
 const joinBtn = document.getElementById('join-btn');
+const soloBtn = document.getElementById('solo-btn');
 const mySymbolEl = document.getElementById('my-symbol');
 const currentTurnEl = document.getElementById('current-turn');
 const cells = document.querySelectorAll('.cell');
@@ -156,6 +157,10 @@ joinBtn.onclick = () => {
         socket.send(JSON.stringify({ type: 'join', code }));
         showState('waiting');
     }
+};
+
+soloBtn.onclick = () => {
+    socket.send(JSON.stringify({ type: 'start_solo' }));
 };
 
 cells.forEach(cell => {

@@ -90,6 +90,14 @@ Le serveur calcule :
 - Les deux joueurs doivent cliquer (système de confirmation mutuelle).
 - La même session WebSocket est réutilisée, les rôles ✕/○ restent identiques.
 
+### 4.8 Mode Solo (vs IA)
+
+- Un bouton "Mode Solo (vs IA)" sur la page d'accueil permet de lancer une partie contre l'ordinateur.
+- L'IA utilise l'algorithme Minimax pour garantir un niveau de jeu optimal (invincible).
+- La logique de l'IA est gérée côté serveur.
+- Le joueur humain joue toujours avec le symbole 'X' et commence la partie.
+- La fonctionnalité "Rejouer" réinitialise le plateau instantanément.
+
 ---
 
 ## 5. Spécifications de l'interface
@@ -98,7 +106,7 @@ Le serveur calcule :
 
 | État | Ce qui s'affiche |
 |---|---|
-| **Lobby** | Code du joueur A + champ de saisie |
+| **Lobby** | Code du joueur A + bouton Solo + champ de saisie |
 | **En attente** | Spinner animé, "En attente de l'adversaire…" |
 | **En jeu — mon tour** | Plateau cliquable, indicateur "Votre tour" |
 | **En jeu — tour adverse** | Plateau non-cliquable, indicateur "Tour de l'adversaire" |
@@ -133,7 +141,6 @@ Le serveur calcule :
 - Mode spectateur
 - Chat entre joueurs
 - Classement / score
-- Mode solo contre IA
 - Rooms multiples (une seule partie active par code)
 
 ---

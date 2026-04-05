@@ -126,9 +126,22 @@ button {
     cursor: pointer;
     font-size: 1rem;
     transition: background 0.2s;
+    width: 100%;
 }
 
 button:hover { background: #357abd; }
+
+.secondary-btn {
+    background: var(--secondary);
+}
+
+.secondary-btn:hover {
+    background: #e67e22;
+}
+
+.solo-card {
+    background: #ecf0f1;
+}
 
 /* Game */
 .status-bar {

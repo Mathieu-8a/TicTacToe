@@ -3,6 +3,7 @@
 ## Page d'accueil
 - [x] Remplacer le texte "Rejoindre" avec "Rejoindre avec le code d'un ami"
 - [x] Préciser les lettres peuvent être en minuscules ou majuscules
+- [x] Ajouter un mode solo (vs IA)
 
 ## Affichage
 - [x] Améliorer l'information du joueur actif

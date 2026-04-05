@@ -38,6 +38,59 @@ function checkWinner(board) {
   return board.includes(null) ? null : { winner: 'draw' };
 }
 
+// AI logic: Minimax
+function getBestMove(board, aiSymbol) {
+  const playerSymbol = aiSymbol === 'X' ? 'O' : 'X';
+
+  function minimax(currentBoard, depth, isMaximizing) {
+    const result = checkWinner(currentBoard);
+    if (result) {
+      if (result.winner === aiSymbol) return 10 - depth;
+      if (result.winner === playerSymbol) return depth - 10;
+      if (result.winner === 'draw') return 0;
+    }
+
+    if (isMaximizing) {
+      let bestScore = -Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (currentBoard[i] === null) {
+          currentBoard[i] = aiSymbol;
+          let score = minimax(currentBoard, depth + 1, false);
+          currentBoard[i] = null;
+          bestScore = Math.max(score, bestScore);
+        }
+      }
+      return bestScore;
+    } else {
+      let bestScore = Infinity;
+      for (let i = 0; i < 9; i++) {
+        if (currentBoard[i] === null) {
+          currentBoard[i] = playerSymbol;
+          let score = minimax(currentBoard, depth + 1, true);
+          currentBoard[i] = null;
+          bestScore = Math.min(score, bestScore);
+        }
+      }
+      return bestScore;
+    }
+  }
+
+  let bestScore = -Infinity;
+  let move = -1;
+  for (let i = 0; i < 9; i++) {
+    if (board[i] === null) {
+      board[i] = aiSymbol;
+      let score = minimax(board, 0, false);
+      board[i] = null;
+      if (score > bestScore) {
+        bestScore = score;
+        move = i;
+      }
+    }
+  }
+  return move;
+}
+
 wss.on('connection', (ws) => {
   let playerCode = generateCode();
   games.set(playerCode, { 
@@ -56,6 +109,19 @@ wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message);
     const game = games.get(ws.gameCode);
+
+    if (data.type === 'start_solo') {
+      const game = games.get(ws.gameCode);
+      if (game && !game.started) {
+        game.isSolo = true;
+        game.started = true;
+        ws.send(JSON.stringify({ 
+          type: 'game_start', 
+          role: ws.role,
+          turn: 'X' 
+        }));
+      }
+    }
 
     if (data.type === 'join') {
       const targetCode = data.code.toUpperCase();
@@ -89,39 +155,71 @@ wss.on('connection', (ws) => {
         game.board[data.cell] = ws.role;
         game.turn++;
         
-        const result = checkWinner(game.board);
+        let result = checkWinner(game.board);
         if (result) {
           game.winner = result.winner;
           game.winningCells = result.cells;
         }
 
-        const payload = {
-          type: 'game_update',
-          board: game.board,
-          currentTurn: game.turn % 2 === 0 ? 'X' : 'O',
-          winner: game.winner,
-          winningCells: game.winningCells
+        const sendUpdate = () => {
+          const payload = {
+            type: 'game_update',
+            board: game.board,
+            currentTurn: game.turn % 2 === 0 ? 'X' : 'O',
+            winner: game.winner,
+            winningCells: game.winningCells
+          };
+          game.players.forEach(p => p.send(JSON.stringify(payload)));
         };
 
-        game.players.forEach(p => p.send(JSON.stringify(payload)));
+        sendUpdate();
+
+        // Trigger AI move if Solo and game not finished
+        if (game.isSolo && !game.winner) {
+          setTimeout(() => {
+            const aiSymbol = ws.role === 'X' ? 'O' : 'X';
+            const aiMove = getBestMove(game.board, aiSymbol);
+            if (aiMove !== -1) {
+              game.board[aiMove] = aiSymbol;
+              game.turn++;
+              result = checkWinner(game.board);
+              if (result) {
+                game.winner = result.winner;
+                game.winningCells = result.cells;
+              }
+              sendUpdate();
+            }
+          }, 500); // Small delay for better UX
+        }
       }
     }
 
     if (data.type === 'rematch_request' && game && game.winner) {
-      game.rematchRequests.add(ws.role);
-      if (game.rematchRequests.size === 2) {
+      if (game.isSolo) {
         game.board = Array(9).fill(null);
         game.turn = 0;
         game.winner = null;
         game.winningCells = null;
-        game.rematchRequests.clear();
-        
-        game.players.forEach(p => p.send(JSON.stringify({ 
+        ws.send(JSON.stringify({ 
           type: 'rematch_accepted',
           board: game.board
-        })));
+        }));
       } else {
-        game.players.find(p => p !== ws).send(JSON.stringify({ type: 'opponent_wants_rematch' }));
+        game.rematchRequests.add(ws.role);
+        if (game.rematchRequests.size === 2) {
+          game.board = Array(9).fill(null);
+          game.turn = 0;
+          game.winner = null;
+          game.winningCells = null;
+          game.rematchRequests.clear();
+          
+          game.players.forEach(p => p.send(JSON.stringify({ 
+            type: 'rematch_accepted',
+            board: game.board
+          })));
+        } else {
+          game.players.find(p => p !== ws).send(JSON.stringify({ type: 'opponent_wants_rematch' }));
+        }
       }
     }
   });
